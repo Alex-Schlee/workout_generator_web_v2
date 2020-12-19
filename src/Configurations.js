@@ -11,7 +11,8 @@ import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import Accordion from 'react-bootstrap/Accordion';
 
-
+const MUSCLE_GROUPS = ['Chest','Back','Shoulders','Legs','Arms','Random']
+const _ = require('lodash');
 
 class Configurations extends React.Component {
     constructor(props){
@@ -38,7 +39,7 @@ class Configurations extends React.Component {
   
     render(){
       return(
-      <Card.Text>
+      <Card>
         <Row>
           <Col>
             <Dropdown>
@@ -60,7 +61,7 @@ class Configurations extends React.Component {
                         firestore={this.props.firestore} />
             </Col>
         </Row>
-      </Card.Text>
+      </Card>
       )
     }
   }
@@ -74,7 +75,7 @@ class Configurations extends React.Component {
     }
 
     renderTemplateSections(selectedTemplateTree){
-        const sections = selectedTemplateTree;
+        const sections = _.omit(selectedTemplateTree, ['equipmentList']);
         const sectionItems = Object.keys(sections).map((key) => 
             <ListGroup.Item key={key}>
                 {key}
@@ -90,7 +91,7 @@ class Configurations extends React.Component {
                     </Accordion.Toggle>
                     </Card.Header>
                     <Accordion.Collapse eventKey="0">
-                        <ListGroup>
+                        <ListGroup key="TemplateListGroup">
                             {sectionItems}
                         </ListGroup>
                     </Accordion.Collapse>
@@ -99,41 +100,55 @@ class Configurations extends React.Component {
         )
     }
 
+
+
+    
+
     renderTemplateComponents(component, key){
         const components = component;
         console.log(this.props.selectedTemplateTree[key]);
-        const componentItems = components.map((item, i) =>
-        <Card>
-            Exercise: {i+1}
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th>Area Focus</th>
-                        <th>Muscle Group</th>
-                        <th>Specific Exercise</th>
-                        <th>Secondaries</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
+
+        function RenderDropdownList(){
+          const dropdownItems = MUSCLE_GROUPS.map((item) =>
+            <Dropdown.Item key={item}>
+              {item}
+            </Dropdown.Item>
+          );
+          return(
+          <Dropdown.Menu>
+            {dropdownItems}
+          </Dropdown.Menu>
+          )
+        }
+
+        return(
+          <Card>
+          <Table striped bordered hover>
+              <thead>
+                  <tr key="templateTableHeaders">
+                      <th>Muscle Group</th>
+                      <th>Specific Exercise</th>
+                      <th>Secondaries</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {components.map(function(item, i){
+                    return(
+                      <tr key={i}>
                         <td>
                         <Dropdown>
-                            <Dropdown.Toggle id="focusListDropdown">{item.focus}</Dropdown.Toggle>
-
+                            <Dropdown.Toggle id="focusListDropdown" key="focusListDropdown">{item.muscleGroup.length > 0 ? item.muscleGroup : 'Random'}</Dropdown.Toggle>
+                            {RenderDropdownList()}                        
                         </Dropdown>
                         </td>
-                        <td>{item.muscleGroup}</td>
                         <td>{item.exerciseName}</td>
-                        <td>{item.secondaries.toString()}</td>
-                    </tr>
-                </tbody>
-            </Table>
-        </Card>
-        );
-        return(
-            <div>
-                {componentItems}
-            </div>
+                        <td>{item.secondaries}</td>
+                      </tr>
+                      )
+                  })}
+              </tbody>
+          </Table>
+      </Card>
         )
     }
 

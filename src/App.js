@@ -51,11 +51,9 @@ function App() {
 
         <Col xs={9}>
           <Card>
-            <Card.Body>
-              <section>
-                {user ? <Main firestore={firestore} /> : <SignIn />}
-              </section> 
-            </Card.Body>
+            <section>
+              {user ? <Main firestore={firestore} /> : <SignIn />}
+            </section> 
           </Card>
         </Col>
 
