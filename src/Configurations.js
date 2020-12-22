@@ -2,7 +2,6 @@ import React from 'react';
 import './App.css';
 
 import Card from 'react-bootstrap/Card';
-import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -57,8 +56,11 @@ class Configurations extends React.Component {
         </Row> 
         <Row>
             <Col>
-            <Template selectedTemplateTree={this.props.selectedTemplateTree}
-                        firestore={this.props.firestore} />
+            <Template 
+            selectedTemplateTree={this.props.selectedTemplateTree} 
+            exercisesArray={this.props.exercisesArray}
+            updateTemplateComponent={template => this.props.updateTemplateComponent(template)}
+            />
             </Col>
         </Row>
       </Card>
@@ -78,7 +80,6 @@ class Configurations extends React.Component {
         const sections = _.omit(selectedTemplateTree, ['equipmentList']);
         const sectionItems = Object.keys(sections).map((key) => 
             <ListGroup.Item key={key}>
-                {key}
                 {this.renderTemplateComponents(sections[key], key)}
             </ListGroup.Item>
         );
@@ -101,16 +102,45 @@ class Configurations extends React.Component {
     }
 
 
-
+    renderSpecificExerciseDropdownList(key, muscleGroup){
+      const exercisesArray = this.props.exercisesArray;
+      const exercises = _.filter(exercisesArray, function(item) {return item.muscleGroup === muscleGroup})
+      const dropdownItems = exercises.map((item, i) =>
+        <Dropdown.Item key={i} onClick={() => this.updateExerciseTemplate(key, i, item)}>
+          {item.exerciseName}
+        </Dropdown.Item>
+      );
+      return(
+      <Dropdown.Menu key={muscleGroup}>
+        {dropdownItems}
+      </Dropdown.Menu>
+      )
+    }
     
+    updateExerciseTemplate(key, i, item){
+      var currentTemplate = this.props.exercisesArray;
+      currentTemplate[key][i] = item;
+      console.log(currentTemplate);
+      this.props.updateTemplateComponent(currentTemplate);
+    }
 
     renderTemplateComponents(component, key){
         const components = component;
-        console.log(this.props.selectedTemplateTree[key]);
+        const exercisesArray = this.props.exercisesArray;
+        const currentTemplate = this.props.selectedTemplateTree;
+        console.log(currentTemplate);
 
-        function RenderDropdownList(){
-          const dropdownItems = MUSCLE_GROUPS.map((item) =>
-            <Dropdown.Item key={item}>
+
+
+        function UpdateMuscleGroupTemplate(key, i, item){
+          console.log(i);
+          currentTemplate[key][i]["muscleGroup"] = item;
+          console.log(currentTemplate[key][i]["muscleGroup"]);
+        }
+
+        function RenderMuscleGroupDropdownList(key){
+          const dropdownItems = MUSCLE_GROUPS.map((item, i) =>
+            <Dropdown.Item key={i} onClick={() => UpdateMuscleGroupTemplate(key, i, item)}>
               {item}
             </Dropdown.Item>
           );
@@ -121,14 +151,15 @@ class Configurations extends React.Component {
           )
         }
 
+
+        
+
         return(
           <Card>
           <Table striped bordered hover>
               <thead>
                   <tr key="templateTableHeaders">
-                      <th>Muscle Group</th>
-                      <th>Specific Exercise</th>
-                      <th>Secondaries</th>
+                      <th>{key}</th>
                   </tr>
               </thead>
               <tbody>
@@ -137,12 +168,17 @@ class Configurations extends React.Component {
                       <tr key={i}>
                         <td>
                         <Dropdown>
-                            <Dropdown.Toggle id="focusListDropdown" key="focusListDropdown">{item.muscleGroup.length > 0 ? item.muscleGroup : 'Random'}</Dropdown.Toggle>
-                            {RenderDropdownList()}                        
+                            <Dropdown.Toggle id="muscleGroupDropdown" key="muscleGroupDropdown">{item.muscleGroup.length > 0 ? item.muscleGroup : 'Random'}</Dropdown.Toggle>
+                            {RenderMuscleGroupDropdownList(key)}                        
                         </Dropdown>
+                        {item.muscleGroup !== 'Random' &&
+                          <Dropdown>
+                              <Dropdown.Toggle id="specExDropdown" key="specExDropdown">{item.exerciseName.length > 0 ? item.exerciseName : 'Random'}</Dropdown.Toggle>
+                              {typeof(item) !== undefined && this.renderSpecificExerciseDropdownList(key, item.muscleGroup)}                        
+                          </Dropdown>
+                        }
+                        {item.secondaries}
                         </td>
-                        <td>{item.exerciseName}</td>
-                        <td>{item.secondaries}</td>
                       </tr>
                       )
                   })}

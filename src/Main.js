@@ -8,9 +8,9 @@ class Main extends React.Component {
     constructor(props){
       super(props);
       this.state = {
-        exercises: [], //what type of exercise, paired, single, etc
-        templateIds: [],
+        exercisesArray: [], //what type of exercise, paired, single, etc
         templatesMap: new Map(),
+        templateIds: [],
         selectedTemplateId: "Body Weight",
         selectedTemplateTree: []
       }
@@ -19,6 +19,10 @@ class Main extends React.Component {
     handleTemplateSelectionClick(template){
       this.setState({selectedTemplateId: template});
       this.setState({selectedTemplateTree: this.state.templatesMap.get(template)})
+    }
+
+    handleTemplateUpdateClick(template){
+      this.setState({selectedTemplateTree: template})
     }
   
     getTemplateData = () => {
@@ -35,11 +39,24 @@ class Main extends React.Component {
   
         if(this.state.templateIds.indexOf(this.state.selectedTemplateId === -1))//if the selected template does not exist replace with first value
           this.setState({selectedTemplateId : templateIds[0]});
+          this.setState({selectedTemplateTree: this.state.templatesMap.get(templateIds[0])})
+      });
+    }
+
+    getExerciseData = () => {
+      let exercisesArray = [];
+      this.props.firestore.collection("exercises").get().then((querySnapshot) => {
+        querySnapshot.forEach(function(doc) {
+          exercisesArray.push(doc.data());
+        });
+
+        this.setState({exercisesArray : exercisesArray})
       });
     }
   
     componentDidMount() {
       this.getTemplateData();
+      this.getExerciseData();
     }
   
   
@@ -51,9 +68,12 @@ class Main extends React.Component {
             selectedTemplateId={this.state.selectedTemplateId} 
             templateIds={this.state.templateIds} 
             selectedTemplateTree={this.state.selectedTemplateTree}
+
             updateSelectedTemplate={template => this.handleTemplateSelectionClick(template)}
+            updateTemplateComponent={template => this.handleTemplateUpdateClick(template)}
             onBuildWorkoutClick={ () => this.buildWorkout()}
-            firestore={this.props.firestore}
+
+            exercisesArray={this.state.exercisesArray}
             />
         </div>
     );
