@@ -193,17 +193,20 @@ class Configurations extends React.Component {
                     return(
                       <tr key={compKey}>
                         <td>
-                        <Dropdown>
-                          <Dropdown.Toggle id="muscleGroupDropdown">{compItem.muscleGroup.length > 0 ? compItem.muscleGroup : 'Random'}</Dropdown.Toggle>
-                          {this.renderMuscleGroupDropdownList(this.props.section, compKey, compItem)}                        
-                        </Dropdown>
-                        {compItem.muscleGroup !== 'Random' &&
+                        <Row>
+                          Muscle Group 
                           <Dropdown>
-                            <Dropdown.Toggle id="specExDropdown" key="specExDropdown">{compItem.exerciseName.length > 0 ? compItem.exerciseName : 'Random'}</Dropdown.Toggle>
-                            {this.renderSpecificExerciseDropdownList(this.props.section, compKey, compItem)}                        
+                            <Dropdown.Toggle id="muscleGroupDropdown">{compItem.muscleGroup.length > 0 ? compItem.muscleGroup : 'Random'}</Dropdown.Toggle>
+                            {this.renderMuscleGroupDropdownList(this.props.section, compKey, compItem)}                        
                           </Dropdown>
-                        }
-                        {compItem.secondaries}
+                          {compItem.muscleGroup !== 'Random' && 
+                            <Dropdown>
+                              <Dropdown.Toggle id="specExDropdown" key="specExDropdown">{compItem.exerciseName.length > 0 ? compItem.exerciseName : 'Random'}</Dropdown.Toggle>
+                              {this.renderSpecificExerciseDropdownList(this.props.section, compKey, compItem)}                        
+                            </Dropdown>
+                          }
+                          {compItem.secondaries}
+                        </Row>
                         </td>
                       </tr>
                       )
