@@ -129,39 +129,44 @@ class Configurations extends React.Component {
   class TemplateComponent extends React.Component {
     
     
-    
-    updateMuscleGroupTemplate(key, i, item){
-      // this.props.selectedTemplateTree[key][i]["muscleGroup"] = item;
+    updateExerciseTemplate(sectionkey, compKey, item){
+      var currentTemplate = this.props.selectedTemplateTree;
+      console.log("Updating Exercise");
+      console.log(currentTemplate);
+
+      currentTemplate[sectionkey][compKey] = item;
+      this.props.updateTemplateComponent(currentTemplate);
     }
     
-    
-    renderSpecificExerciseDropdownList(key, muscleGroup){
-      const exercisesArray = this.props.exercisesArray;
-      console.log(exercisesArray);
-      const exercises = _.filter(exercisesArray, function(item) {return item.muscleGroup === muscleGroup})
+    renderSpecificExerciseDropdownList(sectionkey, compKey, compItem){
+      var exercisesArray = this.props.exercisesArray;
+      const exercises = _.filter(exercisesArray, function(item) {return item.muscleGroup === compItem.muscleGroup})
       const dropdownItems = exercises.map((item, i) =>
-      <Dropdown.Item key={i} onClick={() => this.updateExerciseTemplate(key, i, item)}>
+      <Dropdown.Item key={i} onClick={() => this.updateExerciseTemplate(sectionkey, compKey, item)}>
             {item.exerciseName}
           </Dropdown.Item>
         );
         return(
-          <Dropdown.Menu key={muscleGroup}>
+          <Dropdown.Menu key={compItem.muscleGroup}>
           {dropdownItems}
         </Dropdown.Menu>
         )
       }
       
-      updateExerciseTemplate(key, i, item){
-        var currentTemplate = this.props.exercisesArray;
-        currentTemplate[key][i] = item;
-        console.log(currentTemplate);
+      
+      updateMuscleGroupTemplate(sectionKey, compKey, item){
+        var currentTemplate = this.props.selectedTemplateTree;
+        var newComp = {"exerciseName" : "", "muscleGroup" : item, "secondaries" : false}; //updating indiv values is scuffed, have to create whole new component
+
+        currentTemplate[sectionKey][compKey] = newComp;
         this.props.updateTemplateComponent(currentTemplate);
       }
       
-      renderMuscleGroupDropdownList(section){
+      
+      renderMuscleGroupDropdownList(sectionKey, compKey, compObj){
         const mGroups = MUSCLE_GROUPS;
         const dropdownItems = mGroups.map((item, i) =>
-        <Dropdown.Item key={i} onClick={() => this.updateMuscleGroupTemplate(section, i, item)}>
+        <Dropdown.Item key={i} onClick={() => this.updateMuscleGroupTemplate(sectionKey, compKey, item)}>
               {item}
             </Dropdown.Item>
           );
@@ -175,8 +180,6 @@ class Configurations extends React.Component {
       
       render(){
         const components = this.props.component;
-        const exercisesArray = this.props.exercisesArray;
-        const currentTemplate = this.props.selectedTemplateTree;
         return(
           <Card>
             <Table striped bordered hover>
@@ -186,21 +189,21 @@ class Configurations extends React.Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {components.map((item, i) => {
+                  {components.map((compItem, compKey) => {
                     return(
-                      <tr key={i}>
+                      <tr key={compKey}>
                         <td>
                         <Dropdown>
-                          <Dropdown.Toggle id="muscleGroupDropdown">{item.muscleGroup.length > 0 ? item.muscleGroup : 'Random'}</Dropdown.Toggle>
-                          {this.renderMuscleGroupDropdownList(this.props.section)}                        
+                          <Dropdown.Toggle id="muscleGroupDropdown">{compItem.muscleGroup.length > 0 ? compItem.muscleGroup : 'Random'}</Dropdown.Toggle>
+                          {this.renderMuscleGroupDropdownList(this.props.section, compKey, compItem)}                        
                         </Dropdown>
-                        {item.muscleGroup !== 'Random' &&
+                        {compItem.muscleGroup !== 'Random' &&
                           <Dropdown>
-                            <Dropdown.Toggle id="specExDropdown" key="specExDropdown">{item.exerciseName.length > 0 ? item.exerciseName : 'Random'}</Dropdown.Toggle>
-                            {this.renderSpecificExerciseDropdownList(this.props.section, item.muscleGroup)}                        
+                            <Dropdown.Toggle id="specExDropdown" key="specExDropdown">{compItem.exerciseName.length > 0 ? compItem.exerciseName : 'Random'}</Dropdown.Toggle>
+                            {this.renderSpecificExerciseDropdownList(this.props.section, compKey, compItem)}                        
                           </Dropdown>
                         }
-                        {item.secondaries}
+                        {compItem.secondaries}
                         </td>
                       </tr>
                       )

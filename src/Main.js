@@ -28,7 +28,7 @@ class Main extends React.Component {
     getTemplateData = () => {
       var templateIds = [];
       let templateMap = new Map();
-      this.props.firestore.collection("templates").get().then((querySnapshot) => { //arrow function bings 'this' automatically
+      this.props.firestore.collection("templates").get().then((querySnapshot) => { //arrow function binds 'this' automatically
         querySnapshot.forEach(function(doc) {
           templateIds.push(doc.id);
           templateMap.set(doc.id, doc.data());
