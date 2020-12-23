@@ -2,7 +2,9 @@ import React from 'react';
 import './App.css';
 
 import Configurations from './Configurations';
+import Workout from './Workout';
 
+const _ = require('lodash');
 
 class Main extends React.Component {
     constructor(props){
@@ -12,7 +14,8 @@ class Main extends React.Component {
         templatesMap: new Map(),
         templateIds: [],
         selectedTemplateId: "Body Weight",
-        selectedTemplateTree: []
+        selectedTemplateTree: [],
+        builtWorkout: []
       }
     }
   
@@ -59,6 +62,46 @@ class Main extends React.Component {
       this.getExerciseData();
     }
   
+
+    buildWorkout(){
+      var workoutArray = [];
+      const template = _.omit(this.state.selectedTemplateTree, ['equipmentList']);
+      for(let section in template){
+        for(let component in template[section])
+        {
+          var tempExercisesArray = []
+
+          if(template[section][component].muscleGroup !== 'Random')
+            tempExercisesArray = _.filter(this.state.exercisesArray, {'muscleGroup' : template[section][component].muscleGroup})
+          else
+            tempExercisesArray = this.state.exercisesArray;
+
+          tempExercisesArray = this.filterUsedExercises(tempExercisesArray, workoutArray);
+          workoutArray.push(tempExercisesArray[Math.floor(Math.random() * tempExercisesArray.length)]);
+        }
+      }
+      this.setState({builtWorkout: workoutArray});
+    }
+
+    filterUsedExercises(tempExercisesArray, workoutArray){
+      var filteredExercises = [];
+      for(var unusedEx in tempExercisesArray){
+        var dupe = false;
+        //As much as I hate nested loops this must stay, unless I can find a method to search objects with properties equaling specific values
+        for(var usedEx in workoutArray)
+        {  
+          if(workoutArray[usedEx] !== undefined && workoutArray[usedEx].exerciseName.indexOf(tempExercisesArray[unusedEx].exerciseName) !== -1)
+          dupe = true;
+        }
+        
+        if(dupe === false)
+          filteredExercises.push(tempExercisesArray[unusedEx]);
+      }
+      return filteredExercises
+    }
+
+
+
   
   
     render(){
@@ -75,6 +118,7 @@ class Main extends React.Component {
 
             exercisesArray={this.state.exercisesArray}
             />
+          {this.state.builtWorkout !== undefined && <Workout builtWorkout={this.state.builtWorkout}/>}  
         </div>
     );
   }

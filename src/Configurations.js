@@ -205,7 +205,7 @@ class Configurations extends React.Component {
                               {this.renderSpecificExerciseDropdownList(this.props.section, compKey, compItem)}                        
                             </Dropdown>
                           }
-                          {compItem.secondaries}
+                          {/* {compItem.secondaries} */}
                         </Row>
                         </td>
                       </tr>
