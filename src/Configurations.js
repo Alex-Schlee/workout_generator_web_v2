@@ -131,8 +131,6 @@ class Configurations extends React.Component {
     
     updateExerciseTemplate(sectionkey, compKey, item){
       var currentTemplate = this.props.selectedTemplateTree;
-      console.log("Updating Exercise");
-      console.log(currentTemplate);
 
       currentTemplate[sectionkey][compKey] = item;
       this.props.updateTemplateComponent(currentTemplate);

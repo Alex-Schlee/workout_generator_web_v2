@@ -56,6 +56,10 @@ class Main extends React.Component {
         this.setState({exercisesArray : exercisesArray})
       });
     }
+
+    getExerciseDataByName = () => {
+      //TODO : make calls to database to match on exercise name, should be called in secondary situations
+    }
   
     componentDidMount() {
       this.getTemplateData();
@@ -65,19 +69,27 @@ class Main extends React.Component {
 
     buildWorkout(){
       var workoutArray = [];
+      var exercise;
       const template = _.omit(this.state.selectedTemplateTree, ['equipmentList']);
       for(let section in template){
         for(let component in template[section])
         {
+          //could refactor this into another function to clean it up
           var tempExercisesArray = []
 
-          if(template[section][component].muscleGroup !== 'Random')
+          if(template[section][component].muscleGroup !== 'Random') //random isnt a muscle group so need special case
             tempExercisesArray = _.filter(this.state.exercisesArray, {'muscleGroup' : template[section][component].muscleGroup})
           else
             tempExercisesArray = this.state.exercisesArray;
 
           tempExercisesArray = this.filterUsedExercises(tempExercisesArray, workoutArray);
-          workoutArray.push(tempExercisesArray[Math.floor(Math.random() * tempExercisesArray.length)]);
+
+          if(template[section][component].exerciseName !== "") //check if specific exercise is 
+            exercise = template[section][component]
+          else
+            exercise = tempExercisesArray[Math.floor(Math.random() * tempExercisesArray.length)]
+
+          workoutArray.push(exercise);
         }
       }
       this.setState({builtWorkout: workoutArray});
