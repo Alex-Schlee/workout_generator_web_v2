@@ -53,9 +53,13 @@ class Main extends React.Component {
       this.props.firestore.collection("exercises").get().then((querySnapshot) => {
         querySnapshot.forEach(function(doc) {
           exercisesArray.push(doc.data());
-          muslceGroupsTemp.push(doc.data().muscleGroup)
+          var tempArray = doc.data().muscleGroup;
+          tempArray.map(group => muslceGroupsTemp.push(group));
+
         });
-        this.setState({muscleGroupArray: _.uniq(muslceGroupsTemp)})
+
+        muslceGroupsTemp.push("Random"); 
+        this.setState({muscleGroupArray: _.uniq(muslceGroupsTemp)}) //set available muscle groups
         this.setState({exercisesArray : exercisesArray})
       });
     }
@@ -81,8 +85,13 @@ class Main extends React.Component {
           var tempExercisesArray = []
 
           if(template[section][component].muscleGroup !== 'Random') //random isnt a muscle group so need special case
-            tempExercisesArray = _.filter(this.state.exercisesArray, {'muscleGroup' : template[section][component].muscleGroup})
-          else
+          {
+            tempExercisesArray = _.filter(
+              this.state.exercisesArray, function(muscleGroupItem) 
+              {return muscleGroupItem.muscleGroup.includes(template[section][component].muscleGroup)}
+              )
+          }
+          else //exercisesArray, function(item) {return item.muscleGroup.includes(compItem.muscleGroup)}
             tempExercisesArray = this.state.exercisesArray;
 
           tempExercisesArray = this.filterUsedExercises(tempExercisesArray, workoutArray);

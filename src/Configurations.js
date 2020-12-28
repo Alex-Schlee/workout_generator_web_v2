@@ -140,7 +140,7 @@ class Configurations extends React.Component {
     
     renderSpecificExerciseDropdownList(sectionkey, compKey, compItem){
       var exercisesArray = this.props.exercisesArray;
-      const exercises = _.filter(exercisesArray, function(item) {return item.muscleGroup === compItem.muscleGroup})
+      const exercises = _.filter(exercisesArray, function(item) {return item.muscleGroup.includes(compItem.muscleGroup)})
       const dropdownItems = exercises.map((item, i) =>
       <Dropdown.Item key={i} onClick={() => this.updateExerciseTemplate(sectionkey, compKey, item)}>
             {item.exerciseName}
