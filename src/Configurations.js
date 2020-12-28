@@ -10,7 +10,6 @@ import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import Accordion from 'react-bootstrap/Accordion';
 
-const MUSCLE_GROUPS = ['Chest','Back','Shoulders','Legs','Arms','Random']
 const _ = require('lodash');
 
 class Configurations extends React.Component {
@@ -59,6 +58,7 @@ class Configurations extends React.Component {
             <Template 
             selectedTemplateTree={this.props.selectedTemplateTree} 
             exercisesArray={this.props.exercisesArray}
+            muscleGroupArray={this.props.muscleGroupArray}
             updateTemplateComponent={template => this.props.updateTemplateComponent(template)}
             />
             </Col>
@@ -83,6 +83,7 @@ class Configurations extends React.Component {
           <TemplateSection 
             selectedTemplateTree={this.props.selectedTemplateTree}
             exercisesArray={this.props.exercisesArray}
+            muscleGroupArray={this.props.muscleGroupArray}
             updateTemplateComponent={template => this.props.updateTemplateComponent(template)}
           />
         </Card>
@@ -103,6 +104,7 @@ class Configurations extends React.Component {
                 section={key}
                 selectedTemplateTree={this.props.selectedTemplateTree} 
                 exercisesArray={this.props.exercisesArray}
+                muscleGroupArray={this.props.muscleGroupArray}
                 updateTemplateComponent={template => this.props.updateTemplateComponent(template)}
                 />
           </ListGroup.Item>
@@ -162,7 +164,7 @@ class Configurations extends React.Component {
       
       
       renderMuscleGroupDropdownList(sectionKey, compKey, compObj){
-        const mGroups = MUSCLE_GROUPS;
+        const mGroups = this.props.muscleGroupArray;
         const dropdownItems = mGroups.map((item, i) =>
         <Dropdown.Item key={i} onClick={() => this.updateMuscleGroupTemplate(sectionKey, compKey, item)}>
               {item}

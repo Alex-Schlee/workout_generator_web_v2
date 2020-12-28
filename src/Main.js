@@ -10,7 +10,8 @@ class Main extends React.Component {
     constructor(props){
       super(props);
       this.state = {
-        exercisesArray: [], //what type of exercise, paired, single, etc
+        exercisesArray: [],
+        muscleGroupArray: [],
         templatesMap: new Map(),
         templateIds: [],
         selectedTemplateId: "Body Weight",
@@ -48,11 +49,13 @@ class Main extends React.Component {
 
     getExerciseData = () => {
       let exercisesArray = [];
+      var muslceGroupsTemp = [];
       this.props.firestore.collection("exercises").get().then((querySnapshot) => {
         querySnapshot.forEach(function(doc) {
           exercisesArray.push(doc.data());
+          muslceGroupsTemp.push(doc.data().muscleGroup)
         });
-
+        this.setState({muscleGroupArray: _.uniq(muslceGroupsTemp)})
         this.setState({exercisesArray : exercisesArray})
       });
     }
@@ -120,6 +123,7 @@ class Main extends React.Component {
       return ( 
         <div className="Main">
           <Configurations 
+            muscleGroupArray={this.state.muscleGroupArray}
             selectedTemplateId={this.state.selectedTemplateId} 
             templateIds={this.state.templateIds} 
             selectedTemplateTree={this.state.selectedTemplateTree}
