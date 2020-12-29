@@ -11,6 +11,7 @@ class Main extends React.Component {
       super(props);
       this.state = {
         exercisesArray: [],
+        secondaryMap: new Map(),
         muscleGroupArray: [],
         templatesMap: new Map(),
         templateIds: [],
@@ -67,41 +68,56 @@ class Main extends React.Component {
     getExerciseDataByName = () => {
       //TODO : make calls to database to match on exercise name, should be called in secondary situations
     }
+
+    getSecondaryData = () =>{
+      let secondaryMap = new Map();
+      this.props.firestore.collection("secondaryExercises").get().then((querySnapshot) => {
+        querySnapshot.forEach(function(doc) {
+          secondaryMap.set(doc.id, doc.data());
+        });
+
+        this.setState({secondaryMap: secondaryMap})
+      });
+    }
   
     componentDidMount() {
       this.getTemplateData();
       this.getExerciseData();
+      this.getSecondaryData();
     }
   
 
     buildWorkout(){
       var workoutArray = [];
-      var exercise;
       const template = _.omit(this.state.selectedTemplateTree, ['equipmentList']);
       for(let section in template){
         for(let component in template[section])
         {
+          var exercise;
+          var secondary;
           //could refactor this into another function to clean it up
           var tempExercisesArray = []
+          var tempSecondaryArray = []
 
-          if(template[section][component].muscleGroup !== 'Random') //random isnt a muscle group so need special case
-          {
-            tempExercisesArray = _.filter(
-              this.state.exercisesArray, function(muscleGroupItem) 
-              {return muscleGroupItem.muscleGroup.includes(template[section][component].muscleGroup)}
-              )
-          }
-          else //exercisesArray, function(item) {return item.muscleGroup.includes(compItem.muscleGroup)}
-            tempExercisesArray = this.state.exercisesArray;
 
+          tempExercisesArray = _.filter(this.state.exercisesArray, function(exercise) {return exercise.muscleGroup.includes(template[section][component].muscleGroup)})
           tempExercisesArray = this.filterUsedExercises(tempExercisesArray, workoutArray);
 
-          if(template[section][component].exerciseName !== "") //check if specific exercise is 
+          if(template[section][component].exerciseName !== "") //check if specific exercise is set 
             exercise = template[section][component]
           else
             exercise = tempExercisesArray[Math.floor(Math.random() * tempExercisesArray.length)]
 
           workoutArray.push(exercise);
+
+          if(template[section][component].secondaries)
+          {
+            tempSecondaryArray = this.state.secondaryMap.get(exercise.exerciseName).secondaryList;
+            tempSecondaryArray = _.filter(this.state.exercisesArray, function(exercise) {return tempSecondaryArray.includes(exercise.exerciseName)});
+            tempSecondaryArray = this.filterUsedExercises(tempSecondaryArray, workoutArray);
+            secondary = tempSecondaryArray[Math.floor(Math.random() * tempSecondaryArray.length)];
+            workoutArray.push(secondary);
+          }
         }
       }
       this.setState({builtWorkout: workoutArray});

@@ -133,8 +133,9 @@ class Configurations extends React.Component {
     
     updateExerciseTemplate(sectionkey, compKey, item){
       var currentTemplate = this.props.selectedTemplateTree;
+      var newComp = {"exerciseName" : item.exerciseName, "muscleGroup" : currentTemplate[sectionkey][compKey].muscleGroup, "secondaries" : false}; //updating indiv values is scuffed, have to create whole new component
 
-      currentTemplate[sectionkey][compKey] = item;
+      currentTemplate[sectionkey][compKey] = newComp;
       this.props.updateTemplateComponent(currentTemplate);
     }
     
