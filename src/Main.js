@@ -65,10 +65,6 @@ class Main extends React.Component {
       });
     }
 
-    getExerciseDataByName = () => {
-      //TODO : make calls to database to match on exercise name, should be called in secondary situations
-    }
-
     getSecondaryData = () =>{
       let secondaryMap = new Map();
       this.props.firestore.collection("secondaryExercises").get().then((querySnapshot) => {
@@ -99,23 +95,28 @@ class Main extends React.Component {
           var tempExercisesArray = []
           var tempSecondaryArray = []
 
-
-          tempExercisesArray = _.filter(this.state.exercisesArray, function(exercise) {return exercise.muscleGroup.includes(template[section][component].muscleGroup)})
-          tempExercisesArray = this.filterUsedExercises(tempExercisesArray, workoutArray);
-
-          if(template[section][component].exerciseName !== "") //check if specific exercise is set 
+          if(template[section][component].exerciseName !== "Random"){ //check if specific exercise is set
             exercise = template[section][component]
-          else
+          } 
+          else{
+            tempExercisesArray = _.filter(this.state.exercisesArray, function(exercise) {return exercise.muscleGroup.includes(template[section][component].muscleGroup)})
+            tempExercisesArray = this.filterUsedExercises(tempExercisesArray, workoutArray);
             exercise = tempExercisesArray[Math.floor(Math.random() * tempExercisesArray.length)]
+          }
 
           workoutArray.push(exercise);
 
-          if(template[section][component].secondaries)
+          if(template[section][component].secondaries !== "" && template[section][component].secondaries !== "None")
           {
-            tempSecondaryArray = this.state.secondaryMap.get(exercise.exerciseName).secondaryList;
-            tempSecondaryArray = _.filter(this.state.exercisesArray, function(exercise) {return tempSecondaryArray.includes(exercise.exerciseName)});
-            tempSecondaryArray = this.filterUsedExercises(tempSecondaryArray, workoutArray);
-            secondary = tempSecondaryArray[Math.floor(Math.random() * tempSecondaryArray.length)];
+            if(template[section][component].secondaries !== "Random"){
+              secondary = this.getExerciseByName(template[section][component].secondaries);
+            }
+            else{
+              tempSecondaryArray = this.getSecondaryListByName(exercise.exerciseName);
+              tempSecondaryArray = _.filter(this.state.exercisesArray, function(exercise) {return tempSecondaryArray.includes(exercise.exerciseName)});
+              tempSecondaryArray = this.filterUsedExercises(tempSecondaryArray, workoutArray);
+              secondary = tempSecondaryArray[Math.floor(Math.random() * tempSecondaryArray.length)];
+            }
             workoutArray.push(secondary);
           }
         }
@@ -140,8 +141,13 @@ class Main extends React.Component {
       return filteredExercises
     }
 
+    getSecondaryListByName(exerciseName){
+      return this.state.secondaryMap.get(exerciseName).secondaryList;
+    }
 
-
+    getExerciseByName(exerciseName){
+      return _.find(this.state.exercisesArray, {'exerciseName' : exerciseName})
+    }
   
   
     render(){
@@ -158,6 +164,7 @@ class Main extends React.Component {
             onBuildWorkoutClick={ () => this.buildWorkout()}
 
             exercisesArray={this.state.exercisesArray}
+            secondaryMap={this.state.secondaryMap}
             />
           {this.state.builtWorkout !== undefined && <Workout builtWorkout={this.state.builtWorkout}/>}  
         </div>
