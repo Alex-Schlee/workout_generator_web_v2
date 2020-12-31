@@ -89,8 +89,8 @@ class Main extends React.Component {
       for(let section in template){
         for(let component in template[section])
         {
-          var exercise;
-          var secondary;
+          var exercise = "";
+          var secondary = "";
           //could refactor this into another function to clean it up
           var tempExercisesArray = []
           var tempSecondaryArray = []
@@ -104,7 +104,6 @@ class Main extends React.Component {
             exercise = tempExercisesArray[Math.floor(Math.random() * tempExercisesArray.length)]
           }
 
-          workoutArray.push(exercise);
 
           if(template[section][component].secondaries !== "" && template[section][component].secondaries !== "None")
           {
@@ -117,11 +116,18 @@ class Main extends React.Component {
               tempSecondaryArray = this.filterUsedExercises(tempSecondaryArray, workoutArray);
               secondary = tempSecondaryArray[Math.floor(Math.random() * tempSecondaryArray.length)];
             }
-            workoutArray.push(secondary);
           }
+          workoutArray.push({"exerciseName" : exercise.exerciseName, "secondaryName" : this.checkDefined(secondary)});
         }
       }
       this.setState({builtWorkout: workoutArray});
+    }
+
+    checkDefined(exercise){
+      if(exercise !== undefined)
+        return exercise.exerciseName;
+      else
+        return "";
     }
 
     filterUsedExercises(tempExercisesArray, workoutArray){

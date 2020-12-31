@@ -9,7 +9,9 @@ class Workout extends React.Component {
         const workoutList = list;
         const workoutExerciseListItem = workoutList.map((item, i) =>
           <ListGroup.Item key={i}>
-            {item  ? item.exerciseName : ''}
+            {item ? item.exerciseName : ''}
+            <br/>
+            {item ? item.secondaryName : ''}
           </ListGroup.Item>
         );
         return(

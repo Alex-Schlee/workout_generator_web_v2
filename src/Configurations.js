@@ -138,7 +138,7 @@ class Configurations extends React.Component {
       
       updateMuscleGroupTemplate(sectionKey, compKey, item){
         var currentTemplate = this.props.selectedTemplateTree;
-        var newComp = {"exerciseName" : "", "muscleGroup" : item, "secondaries" : "None"}; //updating indiv values is scuffed, have to create whole new component
+        var newComp = {"exerciseName" : "Random", "muscleGroup" : item, "secondaries" : "None"}; //updating indiv values is scuffed, have to create whole new component
 
         currentTemplate[sectionKey][compKey] = newComp;
         this.props.updateTemplateComponent(currentTemplate);
@@ -184,12 +184,12 @@ class Configurations extends React.Component {
           )
         }
       
-        getSecondaryListByName(exerciseName){
-          if(this.props.secondaryMap.has(exerciseName))
-            return this.props.secondaryMap.get(exerciseName).secondaryList;
-          else
-            return null;
-        }
+      getSecondaryListByName(exerciseName){
+        if(this.props.secondaryMap.has(exerciseName))
+          return this.props.secondaryMap.get(exerciseName).secondaryList;
+        else
+          return null;
+      }
       
       render(){
         const components = this.props.component;
