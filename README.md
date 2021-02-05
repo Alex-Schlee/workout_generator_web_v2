@@ -1,3 +1,13 @@
+
+# Brief Overview
+
+React application that randomly generates a workout using JS to handle the business logic and a Firestore database. Users are able to use templates to determine the structure of the workout as well as restricting possible exercises during each stage of the workout.
+
+I find it very useful when I am indecisive on what lifts I want to do during my workout or when I want to add a little variety to my usual routine.
+
+I would like to revisit this in the future (possibly making a React Native version) but it does what I wanted it to when I started creating it. 
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
